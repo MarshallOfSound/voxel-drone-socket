@@ -1,0 +1,29 @@
+{
+  "name": "voxel-drone-socket",
+  "version": "1.0.0",
+  "description": "Control voxel drone with a websocket :)",
+  "main": "src/index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "gulp-rename": "^1.2.2"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrent \"npm run server\" \"npm run watch\"",
+    "server": "node server.js",
+    "watch": "gulp watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": ["es2015"]
+        }
+      ]
+    ]
+  }
+}
