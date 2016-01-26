@@ -1,6 +1,6 @@
 const drone = window.drone;
 
-const NEUTRAL_PITCH = -25
+const NEUTRAL_PITCH = -25;
 const NEUTRAL_ROLL = -90;
 
 const GRACE_ANGLE = 20;
@@ -10,22 +10,24 @@ const SPEED_RATIO = 12;
 let socket;
 
 const connect = () => {
-  socket = new WebSocket('ws://192.168.1.14:1338');
+  socket = new WebSocket(`ws://${(window.IP || '192.168.1.14')} + ':1338`);
   socket.onopen = () => {
     drone.takeoff();
   };
 
   socket.onmessage = (payload) => {
     const data = JSON.parse(payload.data);
-    let pitch = data.pitch;
+    const pitch = data.pitch;
 
     // DEV: Forward / Backward motion
     let FBdelta = 0;
 
     if (pitch <= NEUTRAL_PITCH - (GRACE_ANGLE / 2)) {
-      FBdelta = Math.abs((NEUTRAL_PITCH - (GRACE_ANGLE / 2)) - Math.max(NEUTRAL_PITCH - AFFECT_ANGLE, pitch));
+      FBdelta = Math.abs((NEUTRAL_PITCH - (GRACE_ANGLE / 2)) -
+                            Math.max(NEUTRAL_PITCH - AFFECT_ANGLE, pitch));
     } else if (pitch >= NEUTRAL_PITCH + (GRACE_ANGLE / 2)) {
-      FBdelta = -1 * Math.abs((NEUTRAL_PITCH + (GRACE_ANGLE / 2)) - Math.min(NEUTRAL_PITCH + AFFECT_ANGLE, pitch));
+      FBdelta = -1 * Math.abs((NEUTRAL_PITCH + (GRACE_ANGLE / 2)) -
+                            Math.min(NEUTRAL_PITCH + AFFECT_ANGLE, pitch));
     }
     drone.front(FBdelta / SPEED_RATIO);
 
@@ -33,16 +35,18 @@ const connect = () => {
     // DEV: Rotating delta
     let Tdelta = 0;
     if (roll <= NEUTRAL_ROLL - (GRACE_ANGLE / 2)) {
-      Tdelta = Math.abs((NEUTRAL_ROLL - (GRACE_ANGLE / 2)) - Math.max(NEUTRAL_ROLL - AFFECT_ANGLE, roll));
+      Tdelta = Math.abs((NEUTRAL_ROLL - (GRACE_ANGLE / 2)) -
+                          Math.max(NEUTRAL_ROLL - AFFECT_ANGLE, roll));
     } else if (roll >= NEUTRAL_ROLL + (GRACE_ANGLE / 2)) {
-      Tdelta = -1 * Math.abs((NEUTRAL_ROLL + (GRACE_ANGLE / 2)) - Math.min(NEUTRAL_ROLL + AFFECT_ANGLE, roll));
+      Tdelta = -1 * Math.abs((NEUTRAL_ROLL + (GRACE_ANGLE / 2)) -
+                          Math.min(NEUTRAL_ROLL + AFFECT_ANGLE, roll));
     }
     drone.clockwise(-1 * Tdelta / (AFFECT_ANGLE - GRACE_ANGLE / (2 * Math.max(1.2, FBdelta))));
   };
 
   socket.onerror = () => {
     socket.close();
-  }
+  };
 
   socket.onclose = () => {
     drone.land();
