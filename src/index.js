@@ -5,7 +5,7 @@ const AFFECT_ANGLE = 40;
 const SPEED_RATIO = 12;
 
 const connect = () => {
-  const socket = new WebSocket('ws://192.168.1.14:1338');
+  const socket = new WebSocket('ws://192.168.1.10:1338');
   socket.onopen = () => {
     drone.takeoff();
   };
